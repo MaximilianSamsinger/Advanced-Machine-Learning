@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-#np.random.seed(1337) # For reproducibility
+np.random.seed(1337) # For reproducibility
 
 def sample_function(f, samplesize, mean = 0, sigma = 1):
     ''' We generate pairs two vectors x and f(x) + normalerror'''
@@ -40,8 +40,8 @@ def linear_regression(x,y, degree = 30, regularizer = 1e-4):
 '''
 Define Parameters here
 '''
-N = 50  # Number of points to be sampled
-M = 20  # Maximal interpolation degree
+N = 10  # Number of points to be sampled
+M = 9  # Maximal interpolation degree
 mean, sigma = 0, 1e-1 # Mean and standard deviation of the error term
 
 def f(x):
@@ -61,26 +61,25 @@ for k in range(len(lambdas)):
     test_errors[k] = RMSerror(x,y_test, coefficients)
 
 X = np.linspace(0,1,500)
-optimal_training_lambda = lambdas[np.argmin(training_errors)]
-optimal_training_coeff = linear_regression(x,y, M, optimal_training_lambda)
-optimal_test_lambda = lambdas[np.argmin(test_errors)]
-optimal_test_coeff = linear_regression(x,y, M, optimal_test_lambda)
+
+optimal_lambda = lambdas[np.argmin(test_errors)]
+optimal_coeff = linear_regression(x,y, M, optimal_lambda)
 
 plt.figure(figsize=(20, 10))
 plt.subplot(131)
 plt.plot(x,y,'o', label='training data')
-plt.plot(X, polynomial(X, optimal_training_coeff), 'r', label='interpolation polynomial')
+plt.plot(X, polynomial(X, linear_regression(x,y, M, 0)), 'r', label='interpolation polynomial')
 plt.plot(X, f(X), 'g--', label='ground truth')
-plt.title('Interpolation polynomial minimizes training error= '
-          + str(round(RMSerror(x,y, optimal_training_coeff),4)))
+plt.title('Interpolation polynomial without regularization' 
+          + '\ntest error= ' + str(round(RMSerror(x,y_test, linear_regression(x,y, M, 0)),4)))
 plt.legend()
 
 plt.subplot(132)
 plt.plot(x,y,'o', label='training data')
-plt.plot(X, polynomial(X, optimal_test_coeff), 'r', label='interpolation polynomial')
+plt.plot(X, polynomial(X, optimal_coeff), 'r', label='interpolation polynomial')
 plt.plot(X, f(X), 'g--', label='ground truth')
-plt.title('Interpolation polynomial minimizes test error= ' 
-          + str(round(RMSerror(x,y_test, optimal_test_coeff),4)))
+plt.title('Interpolation polynomial without regularization' 
+          + '\ntest error= ' + str(round(RMSerror(x,y_test, optimal_coeff),4)))
 plt.legend()
    
 plt.subplot(133)
