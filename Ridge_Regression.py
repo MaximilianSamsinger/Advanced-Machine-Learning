@@ -48,7 +48,7 @@ def cross_validate_for_all_lambdas(x, y, partitions, lambdas, degree):
 Define Parameters here
 '''
 N = 30  # Number of points to be sampled
-M = 15  # Maximal interpolation degree
+M = 20  # Maximal interpolation degree
 mean, sigma = 0, 1e-1 # Mean and standard deviation of the error term
 K = 4 # Number of partitions
 
@@ -78,10 +78,10 @@ plt.subplot(121)
 plt.plot(x,y,'o', label='data')
 plt.plot(X, polynomial(X, overfit_coeff), label='overfit, lambda = 0')
 plt.plot(X, f(X), '-.', label='ground truth')
-plt.plot(X, polynomial(X, optimal_coeff), label='optimal fit, lamda = ' 
-         + str(round(lambdas[np.argmin(test_errors)],6)))
-plt.plot(X, polynomial(X, underfit_coeff), label='underfit, lamda = ' 
-         + str(round(lambdas[-1],4)))
+plt.plot(X, polynomial(X, optimal_coeff), label='optimal fit, log lamda = ' 
+         + str(round(loglambdas[np.argmin(test_errors)],2)))
+plt.plot(X, polynomial(X, underfit_coeff), label='underfit, log lamda = ' 
+         + str(round(loglambdas[-1],2)))
 plt.title('Interpolation without, with optimal and with too much regularization' 
           + '\ntest error= ' + str(round(RMSerror(x,y, overfit_coeff),6)))
 plt.axis((-0.05, 1.05, -1.3, 1.3))
