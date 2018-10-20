@@ -82,8 +82,7 @@ plt.plot(X, polynomial(X, optimal_coeff), label='optimal fit, log lamda = '
          + str(round(loglambdas[np.argmin(test_errors)],2)))
 plt.plot(X, polynomial(X, underfit_coeff), label='underfit, log lamda = ' 
          + str(round(loglambdas[-1],2)))
-plt.title('Interpolation without, with optimal and with too much regularization' 
-          + '\ntest error= ' + str(round(RMSerror(x,y, overfit_coeff),6)))
+plt.title('Interpolation with variing regularization (lambda)')
 plt.axis((-0.05, 1.05, -1.3, 1.3))
 plt.legend()
 
@@ -96,40 +95,3 @@ plt.ylabel('E_RMS')
 plt.legend()
 x1, x2, y1, y2 = plt.axis()
 plt.axis((x1, x2, 0, 0.6))
-
-'''
-plt.figure(figsize=(19, 9))
-plt.subplot(131)
-plt.plot(x,y,'o', label='data')
-plt.plot(X, polynomial(X, overfit_coeff), 'r', label='interpolation polynomial')
-plt.plot(X, f(X), 'g--', label='ground truth')
-plt.title('Interpolation without regularization' 
-          + '\ntest error= ' + str(round(RMSerror(x,y, overfit_coeff),4)))
-plt.legend()
-
-plt.subplot(132)
-plt.plot(x,y,'o', label='data')
-plt.plot(X, polynomial(X, optimal_coeff), 'r', label='interpolation polynomial')
-plt.plot(X, f(X), 'g--', label='ground truth')
-plt.title('Interpolation with (optimal) regularization' 
-          + '\ntest error= ' + str(round(RMSerror(x,y, optimal_coeff),4)))
-plt.legend()
-
-plt.subplot(133)
-plt.plot(x,y,'o', label='data')
-plt.plot(X, polynomial(X, underfit_coeff), 'r', label='interpolation polynomial')
-plt.plot(X, f(X), 'g--', label='ground truth')
-plt.title('Interpolation with too much regularization' 
-          + '\ntest error= ' + str(round(RMSerror(x,y, underfit_coeff),4)))
-plt.legend()
-
-plt.figure()
-plt.plot(loglambdas, train_errors, 'b', label='training')
-plt.plot(loglambdas, test_errors, 'r', label='test')
-plt.title('Error vs log lambda')
-plt.xlabel('log lambda')
-plt.ylabel('E_RMS')
-plt.legend()
-x1, x2, y1, y2 = plt.axis()
-plt.axis((x1, x2, 0, 0.6))
-'''
