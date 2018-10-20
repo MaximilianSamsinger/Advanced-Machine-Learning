@@ -1,48 +1,41 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from utils import sample_function, polynomial, RMSerror, linear_regression, \
+    partition, optimal_coefficients
 
+np.random.seed(1) # For reproducibility
 
-np.random.seed(1337) # For reproducibility
-
-def sample_function(f, samplesize, mean = 0, sigma = 1):
-    ''' We generate pairs two vectors x and f(x) + normalerror'''
-    
-    x = np.linspace(0,1,samplesize) #This choice is arbitary
-    function = f(x)
-    error = np.random.normal(mean, sigma , samplesize)
-    return x, function + error
-
-
-def polynomial(X, coefficients):
-    polynomial = np.zeros(len(X))
-    for k in range(len(coefficients)):
-        polynomial += coefficients[k]*X**k # Numerically not ideal
-    return polynomial
-
-def RMSerror(x,y, coefficients):
-    return np.linalg.norm(y-polynomial(x,coefficients))/np.sqrt(len(x))
-    
-
-def linear_regression(x,y, degree = 30, regularizer = 1e-4):
-    ''' Interpolate using a polynomial regression function '''
-    A = np.zeros((len(x),degree + 1))
-    for k in range(len(x)):
-        A[k] = x[k] ** np.arange(degree + 1)
-    
-    ''' Solving a linear system, since computing the matrix inverse is 
-    numerically unstable and evil in general '''
-    coefficients = np.linalg.solve(A.T@A + regularizer*np.identity(degree + 1)
-                                    , A.T@y)
-    
-    return coefficients
+def cross_validation(x, y, partitions, lambdas, degree = 30):
+    averaged_coeff = 0
+    averaged_test_error = 0
+    for count, test_partition in enumerate(partitions):
+        ''' Create training partition by combining all non-test partitions '''
+        train_partition = []
+        for k in range(len(partitions)):
+            if k != count:
+                train_partition += partitions[k]
+        train_data = (x[train_partition], y[train_partition])
+        test_data = (x[test_partition], y[test_partition])
+        
+        optimal_coeff, optimal_lambda, errors = optimal_coefficients(
+                train_data, test_data, lambdas, degree)
+        
+        averaged_coeff += optimal_coeff
+        averaged_test_error += min(errors[1])
+        
+    averaged_coeff /= len(partitions)
+    averaged_test_error /= len(partitions)
+    return averaged_coeff, averaged_test_error
 
 
 '''
 Define Parameters here
 '''
-N = 10  # Number of points to be sampled
+N = 12  # Number of points to be sampled
 M = 9  # Maximal interpolation degree
 mean, sigma = 0, 1e-1 # Mean and standard deviation of the error term
+K = 4 # Number of partitions
+
 
 def f(x):
     return np.sin(2*np.pi*x)
@@ -50,24 +43,25 @@ def f(x):
 x, y  = sample_function(f, N, mean, sigma)
 _, y_test = sample_function(f, N, mean, sigma)
 
-loglambdas = np.linspace(-30,-1,300)
+
+loglambdas = np.linspace(-35,-1,300)
 lambdas = np.exp(loglambdas)
 
-training_errors = np.zeros(len(lambdas))
-test_errors = np.zeros(len(lambdas))
-for k in range(len(lambdas)):
-    coefficients = linear_regression(x,y, regularizer = lambdas[k])
-    training_errors[k] = RMSerror(x,y, coefficients)
-    test_errors[k] = RMSerror(x,y_test, coefficients)
+optimal_coeff, optimal_lambda, errors = optimal_coefficients(
+        (x,y), (x,y_test), lambdas, degree = M)
+
+train_errors, test_errors = errors
+
+partitions = partition(x,K)
+cv_coeff, cv_test_error = cross_validation(
+        x, y, partitions, lambdas, degree = 30)
 
 X = np.linspace(0,1,500)
 
-optimal_lambda = lambdas[np.argmin(test_errors)]
-optimal_coeff = linear_regression(x,y, M, optimal_lambda)
-
-plt.figure(figsize=(20, 10))
+plt.figure(figsize=(19, 9))
 plt.subplot(131)
 plt.plot(x,y,'o', label='training data')
+plt.plot(x,y_test,'o', label='test data')
 plt.plot(X, polynomial(X, linear_regression(x,y, M, 0)), 'r', label='interpolation polynomial')
 plt.plot(X, f(X), 'g--', label='ground truth')
 plt.title('Interpolation polynomial without regularization' 
@@ -76,14 +70,23 @@ plt.legend()
 
 plt.subplot(132)
 plt.plot(x,y,'o', label='training data')
+plt.plot(x,y_test,'o', label='test data')
 plt.plot(X, polynomial(X, optimal_coeff), 'r', label='interpolation polynomial')
 plt.plot(X, f(X), 'g--', label='ground truth')
-plt.title('Interpolation polynomial without regularization' 
+plt.title('Interpolation polynomial with (optimal) regularization' 
           + '\ntest error= ' + str(round(RMSerror(x,y_test, optimal_coeff),4)))
 plt.legend()
-   
+
 plt.subplot(133)
-plt.plot(loglambdas, training_errors, 'b', label='training')
+plt.plot(x,y,'o', label='data')
+plt.plot(X, polynomial(X, cv_coeff), 'r', label='interpolation polynomial')
+plt.plot(X, f(X), 'g--', label='ground truth')
+plt.title('Cross validated interpolation polynomial with (optimal) regularization' 
+          + '\ntest error= ' + str(round(cv_test_error,4)))
+plt.legend()
+
+plt.figure()
+plt.plot(loglambdas, train_errors, 'b', label='training')
 plt.plot(loglambdas, test_errors, 'r', label='test')
 plt.title('Error vs log lambda')
 plt.xlabel('log lambda')
