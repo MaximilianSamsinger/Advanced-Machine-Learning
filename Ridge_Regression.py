@@ -5,8 +5,16 @@ from utils import sample_function, polynomial, RMSerror, linear_regression, \
 
 def cross_validation(x, y, partitions, regularizer, degree = 30):
     ''' 
-    Note: For each partition we get different optimal lambda! 
-    We probably want to change that by changing optimal_coefficients()
+    For each element in partitions we split  the data (x, y)
+    into a training partition and a test partition.
+    
+    Then we perform linear regression for the given regularization parameter 
+    to calculate the optimal coefficients for the current training partition
+    and test partition.
+    
+    Finally we average all coefficients and errors.
+    
+    Remark: degree is the maximal degree of our interpolation polynomial.  
     '''
     averaged_coeff = 0
     averaged_training_error = 0
@@ -36,6 +44,14 @@ def cross_validation(x, y, partitions, regularizer, degree = 30):
     return averaged_coeff, averaged_training_error, averaged_test_error
 
 def cross_validate_for_all_lambdas(x, y, partitions, lambdas, degree):
+    '''
+    Same as cross_validation. However, we accept multiple regularization 
+    parameters and call them lambdas. 
+    
+    This function returns a coefficient matrix which returns the coefficients
+    coefficients[k] for each lambdas[k].
+    '''
+    
     train_errors = np.zeros(len(lambdas))
     test_errors = np.zeros(len(lambdas))
     coefficients = np.zeros((len(lambdas), degree + 1))
@@ -70,7 +86,9 @@ overfit_coeff = coefficients[0]
 optimal_coeff = coefficients[np.argmin(test_errors)]
 underfit_coeff = coefficients[-1]
 
-
+''' 
+Plotting begins here 
+'''
 X = np.linspace(0,1,500)
 
 plt.figure(figsize=(19, 9))
