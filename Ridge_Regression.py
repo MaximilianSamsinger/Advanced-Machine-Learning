@@ -3,14 +3,14 @@ import matplotlib.pyplot as plt
 from utils import sample_function, polynomial, RMSerror, linear_regression, \
     partition
 
-def cross_validation(x, y, partitions, regularizer, degree = 30):
+def cross_validation(x, y, partition, regularizer, degree = 30):
     ''' 
-    For each element in partitions we split  the data (x, y)
+    For each element in partition we split  the data (x, y)
     into a training partition and a test partition.
     
     Then we perform linear regression for the given regularization parameter 
-    to calculate the optimal coefficients for the current training partition
-    and test partition.
+    to calculate the optimal coefficients for the current training set
+    and test set.
     
     Finally we average all coefficients and errors.
     
@@ -20,14 +20,14 @@ def cross_validation(x, y, partitions, regularizer, degree = 30):
     averaged_training_error = 0
     averaged_test_error = 0
     
-    for count, test_partition in enumerate(partitions):
-        ''' Create training partition by combining all non-test partitions '''
-        train_partition = []
-        for k in range(len(partitions)):
+    for count, test_subset in enumerate(partition):
+        ''' Create training set by combining all non-test sets '''
+        train_subset = []
+        for k in range(len(partition)):
             if k != count:
-                train_partition += partitions[k]
-        x_train, y_train = x[train_partition], y[train_partition]
-        x_test, y_test = x[test_partition], y[test_partition]
+                train_subset += partition[k]
+        x_train, y_train = x[train_subset], y[train_subset]
+        x_test, y_test = x[test_subset], y[test_subset]
         
         coefficients = linear_regression(x_train, y_train, degree,
                                          regularizer = regularizer)
@@ -38,12 +38,12 @@ def cross_validation(x, y, partitions, regularizer, degree = 30):
         averaged_training_error += train_error
         averaged_test_error += test_errors
     
-    averaged_coeff /= len(partitions)
-    averaged_training_error /= len(partitions)
-    averaged_test_error /= len(partitions)
+    averaged_coeff /= len(partition)
+    averaged_training_error /= len(partition)
+    averaged_test_error /= len(partition)
     return averaged_coeff, averaged_training_error, averaged_test_error
 
-def cross_validate_for_all_lambdas(x, y, partitions, lambdas, degree):
+def cross_validate_for_all_lambdas(x, y, partition, lambdas, degree):
     '''
     Same as cross_validation. However, we accept multiple regularization 
     parameters and call them lambdas. 
@@ -57,7 +57,7 @@ def cross_validate_for_all_lambdas(x, y, partitions, lambdas, degree):
     coefficients = np.zeros((len(lambdas), degree + 1))
     for k, regularizer in enumerate(lambdas):
         coefficients[k], train_errors[k], test_errors[k] = cross_validation(
-                x, y, partitions, regularizer, degree)
+                x, y, partition, regularizer, degree)
     return coefficients, train_errors, test_errors
 
 '''
@@ -66,7 +66,7 @@ Define Parameters here
 N = 30  # Number of points to be sampled
 M = 20  # Maximal interpolation degree
 mean, sigma = 0, 1e-1 # Mean and standard deviation of the error term
-K = 4 # Number of partitions
+K = 5 # Partition our data into K subsets. 
 
 loglambdas = np.linspace(-37,-1,300)
 lambdas = np.exp(loglambdas)
@@ -78,9 +78,9 @@ def f(x):
 x, y  = sample_function(f, N, mean, sigma)
 
 
-partitions = partition(x,K)
+partition = partition(x,K)
 coefficients, train_errors, test_errors = cross_validate_for_all_lambdas(
-        x, y, partitions, lambdas, degree = M)
+        x, y, partition, lambdas, degree = M)
 
 overfit_coeff = coefficients[0]
 optimal_coeff = coefficients[np.argmin(test_errors)]

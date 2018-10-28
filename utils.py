@@ -36,26 +36,26 @@ def linear_regression(x,y, degree = 30, regularizer = 1e-4):
     return coefficients
 
 
-def partition(x, num_partitions):
+def partition(x, num_subsets):
     ''' 
     Returns a partition of numbers (indices) from 0 to len(x)-1 .
     These serve as indices for partitioning x.
     The indices get at first split into buckets and then equally 
-    (but randomly per bucket) distributed to the partitions.
+    (but randomly per bucket) distributed to the subsets.
     '''
-    partitions = [[] for k in range(num_partitions)]
-    len_partition = len(x)//num_partitions
+    subsets = [[] for k in range(num_subsets)]
+    len_subset = len(x)//num_subsets
     numbers = list(range(len(x)))
-    for k in range(len_partition):
+    for k in range(len_subset):
         # Choose the kth bucket
         # A bucket ranges from shift to shift + len_partition
-        shift = k*num_partitions 
-        bucket = numbers[shift:shift+len_partition] 
+        shift = k*num_subsets 
+        bucket = numbers[shift:shift+len_subset] 
         # Shuffle bucket
-        numbers[shift:shift+len_partition] = random.sample(bucket,len(bucket))
+        numbers[shift:shift+len_subset] = random.sample(bucket,len(bucket))
     for i in range(len(x)):
-        partitions[i%num_partitions] += [numbers[i]]
-    return partitions
+        subsets[i%num_subsets] += [numbers[i]]
+    return subsets
 
 def optimal_coefficients(train_data, test_data, lambdas, degree = 30):
     x_train, y_train = train_data
