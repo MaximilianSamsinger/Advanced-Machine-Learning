@@ -48,7 +48,7 @@ def partition(x, num_subsets):
     numbers = list(range(len(x)))
     for k in range(len_subset):
         # Choose the kth bucket
-        # A bucket ranges from shift to shift + len_partition
+        # A bucket ranges from shift to shift + len_subset
         shift = k*num_subsets 
         bucket = numbers[shift:shift+len_subset] 
         # Shuffle bucket
