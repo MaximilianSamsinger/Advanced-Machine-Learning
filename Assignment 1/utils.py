@@ -1,5 +1,5 @@
 '''
-Helper file fore Ridge_Regression
+sHelper file fore Ridge_Regression
 '''
 
 import numpy as np
