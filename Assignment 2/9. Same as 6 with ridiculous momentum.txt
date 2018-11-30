@@ -1,0 +1,1 @@
+opt = keras.optimizers.SGD(lr=0.01, momentum=0.99, decay=1e-4, nesterov=True)

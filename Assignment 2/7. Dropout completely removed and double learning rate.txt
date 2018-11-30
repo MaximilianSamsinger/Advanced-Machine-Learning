@@ -1,0 +1,16 @@
+x_train shape: (50000, 32, 32, 3)
+50000 train samples
+10000 test samples
+Using real-time data augmentation.
+Epoch 1/100
+782/782 [==============================] - 319s 408ms/step - loss: 1.4655 - acc: 0.4828 - val_loss: 1.1875 - val_acc: 0.5949
+Epoch 2/100
+782/782 [==============================] - 313s 400ms/step - loss: 1.0563 - acc: 0.6347 - val_loss: 1.0887 - val_acc: 0.6420
+Epoch 3/100
+782/782 [==============================] - 305s 390ms/step - loss: 0.8821 - acc: 0.6976 - val_loss: 0.9633 - val_acc: 0.6776
+Epoch 4/100
+782/782 [==============================] - 293s 374ms/step - loss: 0.7812 - acc: 0.7337 - val_loss: 0.8745 - val_acc: 0.7216
+Epoch 5/100
+782/782 [==============================] - 293s 375ms/step - loss: 0.7130 - acc: 0.7618 - val_loss: 0.7863 - val_acc: 0.7361
+Epoch 6/100
+139/782 [====>.........................] - ETA: 3:49 - loss: 0.6668 - acc: 0.7743Traceback
