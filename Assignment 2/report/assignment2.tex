@@ -1,0 +1,324 @@
+\documentclass{article}
+
+% Set page margin
+% http://kb.mit.edu/confluence/pages/viewpage.action?pageId=3907057
+\usepackage[margin=2.5cm]{geometry}
+
+% Plots
+\usepackage{pgfplots}
+
+% Math operations
+\usepackage{amsmath}
+
+% FloatBarrier
+\usepackage{placeins}
+
+% Insert images from file path
+\usepackage{graphicx}
+\usepackage{wrapfig}
+
+\usepackage{caption}
+
+% Mono spaced font
+\usepackage{bera}
+
+% Referencing figures, listings etc. 
+\usepackage{hyperref}
+\usepackage{capt-of}
+
+% some color definitions
+\usepackage{xcolor}
+\definecolor{cblue}{RGB}{16,78,139}
+\definecolor{cred}{RGB}{139,37,0}
+\definecolor{cgreen}{RGB}{0,139,0} 
+\definecolor{corange}{RGB}{255,160,77}
+\definecolor{clightblue}{RGB}{62,137,190}
+
+% normal box
+\newcommand{\sqboxs}{1.2ex}% the square size
+\newcommand{\sqboxf}{0.6pt}% the border in \sqboxEmpty
+\newcommand{\sqbox}[1]{\textcolor{#1}{\rule{\sqboxs}{\sqboxs}}}
+
+% Code highlighting
+\usepackage{color}
+\usepackage{listings}
+\usepackage{setspace}
+
+% Define colors for Python listings
+\definecolor{Code}{rgb}{0,0,0}
+\definecolor{Decorators}{rgb}{0.5,0.5,0.5}
+\definecolor{Numbers}{rgb}{0.5,0,0}
+\definecolor{MatchingBrackets}{rgb}{0.25,0.5,0.5}
+\definecolor{Keywords}{rgb}{0,0,1}
+\definecolor{self}{rgb}{0,0,0}
+\definecolor{Strings}{rgb}{0,0.63,0}
+\definecolor{Comments}{rgb}{0,0.63,1}
+\definecolor{Backquotes}{rgb}{0,0,0}
+\definecolor{Classname}{rgb}{0,0,0}
+\definecolor{FunctionName}{rgb}{0,0,0}
+\definecolor{Operators}{rgb}{0,0,0}
+\definecolor{Background}{rgb}{0.98,0.98,0.98}
+
+\lstdefinelanguage{Python}{
+	numbers=left,
+	numberstyle=\footnotesize,
+	numbersep=1em,
+	xleftmargin=1em,
+	framextopmargin=2em,
+	framexbottommargin=2em,
+	showspaces=false,
+	showtabs=false,
+	showstringspaces=false,
+	frame=l,
+	tabsize=4,
+	% Basic
+	basicstyle=\ttfamily\small\setstretch{1},
+	backgroundcolor=\color{Background},
+	% Comments
+	commentstyle=\color{Comments}\slshape,
+	% Strings
+	stringstyle=\color{Strings},
+	morecomment=[s][\color{Strings}]{"""}{"""},
+	morecomment=[s][\color{Strings}]{'''}{'''},
+	% keywords
+	morekeywords={import,from,class,def,for,while,if,is,in,elif,else,not,and,or,print,break,continue,return,True,False,None,access,as,,del,except,exec,finally,global,import,lambda,pass,print,raise,try,assert},
+	keywordstyle={\color{Keywords}\bfseries},
+	% additional keywords
+	morekeywords={[2]@invariant,pylab,numpy,np,scipy},
+	keywordstyle={[2]\color{Decorators}\slshape},
+	emph={self},
+	emphstyle={\color{self}\slshape},
+	%
+}
+\linespread{1.3}
+
+
+% Define new float types so that I can reference them with captionof from the capt-of package. 
+% https://tex.stackexchange.com/questions/6157/floating-an-algorithm
+% Could be helpful as well: https://tex.stackexchange.com/questions/115499/image-caption-within-newfloat
+\usepackage{float}
+\newfloat{MyListing}{t}{lop}
+\newfloat{Enumerate}{t}{lop2}
+
+
+\begin{titlepage}
+	\title{Assignment 2 - Convolutional Neural Network\\
+		{\large Course: \textit{Advanced Machine Learning}}}
+	\date{\today}	
+\end{titlepage}
+
+
+
+
+\begin{document}
+	
+	\maketitle
+	
+	\section{Teammembers and Contributions}
+	\label{sec:TeammembersAndContributions}
+	
+	\begin{itemize}
+		\item \makebox[0.4\linewidth]{\textbf{Bernd Menia}, \hfill\textit{01316129}:} Report, Programming, Testing, Plots
+		\item \makebox[0.4\linewidth]{\textbf{Maximilian Samsinger}, \hfill\textit{01115383}:} Main Programming, Testing
+	\end{itemize}
+	
+	\noindent The difference in our contributions is because Bernd just only started working with Machine Learning, while Maximilian has already prior knowledge in the subject. Thus we worked together, but the main programming work for this assignment was done by Maximilian. Apart from that due to the size of the code we will only list the most important parts and explain them in detail with the gathered results. 
+	
+	
+	% Pendelt sich bei 79% ein nach so und so vielen Epochen. 
+	\section{PC Specifications and Original Example}
+	\label{sec:PCSpecificationsAndOriginalExample}
+	As requested by the exercise we first downloaded the original \textbf{CIFAR10} example from the keras-team git (source). Although it wouldn't run right away because apparently some variables weren't initialized in the original code. After adding a few lines to the code it ran just fine though. According to the Keras-team the CNN should get to $75\%$ validation accuracy in 25 epochs and $79\%$ after 50 epochs. We calculated 100 epochs of the code, but we cannot quite confirm the claims. After 25 epochs we only got to a validation accuracy of $\approx73\%$. Furthermore the validation accuracy reached its plateau at at averaging $\approx76\%$ after about 34 epochs and didn't change much more, even after running all 100 epochs. \autoref{fig:validationAccuracy} shows the differences of the validation accuracy between the original claims, our run of the original example and multiple modifications that we applied to the code. The original example is hereby represented by the black curve. \\
+	%We completed 100 epochs of the code and can affirm these claims (exact numbers) as can be seen in Figure X with the red line. \\
+	\\
+	Since it took a long time to run the examples on our hardware we often only computed 25 epochs to see if the results changed noticeably from the original example. If they didn't change much we stopped execution to save time. For changes that had a positive impact we let them run through all 100 epochs. 
+	%Also we got rid of all dropout-statements except the last one because we were unsure if they would have a positive influence or not. 
+	Finally we also doubled our batch size from $32$ to $64$ which improved the results a little bit. We also tried to increase the batch size for the first 2 layers up to $128$, but results only marginally improved and where almost negligible. However in the latter case the computation time increased by about $50\%$ which made it impracticable and we therefore decreased the batch size again to $64$ for each layer which seemed to have the best tradeoff between accuracy and computation time in our opinion. 
+	%Finally we also doubled our batch size from $32$ to $64$, though both batch sizes seem to produce similar results. It is also worth noting that we didn't only optimizer for low test errors, but also for a high convergence rate. 
+	
+	\section{Modifying the Code}
+	\label{sec:ModifyingTheCode}
+	%79\% doesn't sound too shabby, but of course we're not too content with these numbers. 
+	Ideally we wanted our CNN to have up to 90\% test accuracy, i.e. validation accuracy. To achieve this we altered our code from different viewpoints and checked each time how the accuracy of the CNN changed. Although because on our hardware each epoch took about 3 minutes to complete we often only tested the first 25 epochs to check how the values changed. \\
+	
+	\subsection{Batch Normalization}
+	\label{subsec:BatchNormalization}
+	%The first thing we tried out was to use \textbf{Batch Normalization}, that is to normalize the output of the activation function. 
+	The first thing we tried out was to use \textbf{Batch Normalization}, that is to normalize the outputs of the layers, i.e. the values get standard normal distributed. Doing this is convenient because we reduce the span of values that each node in the CNN can output. Without Batch Normalization the CNN would possibly have to learn how outlying values behave which could increase the calculation time. Also when we consider multiple metrics for our values it is useful to have them on the same scale. However Batch Normalization does not punish extremely positive or negative values for weights, which proved to be critical in our Ridge Regression exercice. This is where \textbf{Kernel Regularization} comes into play. Though we will only look into it in \autoref{subsec:KernelRegularizer}. \\
+	%However Batch Normalization does not actually punish outlying values. 
+	\\
+	We used the built in Batch Normalization function from Keras to dampen our values, so we don't know exactly how the values get altered. Also when looking at the results we didn't see much of a difference compared to the original example. To not clutter up the plot we therefore didn't include this run through in the plot in \autoref{fig:validationAccuracy}. 
+	%Also when looking at the results we didn't see much of a difference as indicated by the blue curve in Figure X.
+	% TODO BN
+	However since in our opinion Batch Normalization is good practice we let it in the code with the ret of the alterations. Also we believe that it could have positive effects on the accuracy overall, but we didn't test every permutation of all different changes we made because this would require us to run dozens of different tests, for which we didn't have the time.
+	 
+	%The first thing we tried out was to use \textbf{Batch Normalization}, that is to normalize the output of the activation function. This is done to reduce the impact of outlying values. In principal this is the same process as dampening the values in a linear regression model with the $\lambda$ value. We used the built in Batch Normalization function from Keras to dampen our values, so we don't know exactly how the values get altered. Also when looking at the results we didn't see much of a difference as indicated by the blue curve in Figure X. However since in our opinion Batch Normalization is good practice we let it in the code with the ret of the alterations. Also we believe that it could have positive effects on the accuracy overall, but we didn't test every permutation of all different changes we made because this would require us to run dozens of different tests, for which we didn't have the time. 
+	
+	\subsection{Stochastic Gradient Descent (SGD)}
+	\label{subsec:StochasticGradientDescent}
+	The next thing we implemented is the usage of \textbf{Stochastic Gradient Descent (SGD)}. The reason for this is the same as before, we want to minimize the test errors in our CNN. 
+	%Hereby SGD specifies in which direction we take our next step and also how big the step is. 
+	Think of SGD in the following way: Suppose you have a skyline of mountains like depicted by the curve in Figure Y. You are standing on the top, i.e. the start for our CNN and you want to go to the minimal height level, i.e. the minimum test error in our case. Now there are two main questions: \textbf{1)} how big should the steps be that we take and \textbf{2)} in which direction should we go? If our steps are too big then we are prone to stepping over the minima and going the mountain back up on the other side which is obviously not desired. However this problem is almost unavoidable unless we step exactly onto the minima. To combat this nuisance SGD introduces a decay factor which continuously reduces the step size until we get to our minima (until the distance to our minima is within a given delta???). By trial and error we chose $1e-4$ as the preferred decay. \\
+	\\
+	But still the problem is not yet solved. The second problem that we have to overcome is that if we just take steps in one direction then we could step over the minima which would mean that we would climb the next mountain and get increasingly further away from our minima. SGD takes into account the last few steps and checks if we get closer to the minima, or further away from it. If we get closer to the minima then the direction doesn't change. In contrast if we get further away then we flip the direction in which we take our steps. \\
+	\\
+	To make our lives easier we also added a momentum factor of $0.9$. The higher this factor, the more emphasis lies on the first step sizes in the sense of that we take bigger steps. Speaking from our metaphor point of view this can be thought of as how quick we are taking our steps. Are we slowly strolling down the mountain (low momentum) or are we running (high momentum)? \\
+	\\
+	These properties are good enough to make sure that we will get to the minima if we only consider two mountains, i.e. a quadratic curve. However what happens if we have 3 mountains and the minima is between the second and third mountain? If our step size is not big enough to go over the second mountain then we are stuck between the first two and get to their minima, but we never actually get to the global minima, i.e. between the second and third mountain. \\
+	\\
+	In our code SGD is represented with the following line: \textit{opt = keras.optimizers.SGD(lr=0.01, momentum=0.9, decay=1e-4, nesterov=True)}. We computed 100 epochs with SGD and Batch Normalization and we could ascertain that the average validation accuracy went up by about $2\%$ from $\approx76\%$ to $\approx78\%$. There are many different types of adaptive methods that perform similar tasks to SGD, for example \textbf{Root Mean Squar Propagation (RMSPRop)} or \textbf{Adaptive Moment Estimation (Adam)}. Overall RMSProp and Adam achidve better results regarding training errors, but we chose SGD because it generalizes better and has therefore lower test errors. 
+	
+	% Nesterov? : o 
+	
+	%but the results stayed almost identical to the original CNN. 
+	
+	%These two properties will make sure that we will get to the minima of a parabolia 
+	
+	%The second problem that we have to overcome is the direction
+	
+	
+	
+	%Also if we just take steps in one direction then we could step over the minima and then just continue climbing up the next mountain and so on. 
+	
+	%There are multiple reasons why we chose to use SGD. First of all the 
+	
+	%The reason why we implemented it is because it can happen that if the step size is too big then we overshoot on our minimum test errors and get worse values. 
+	
+
+	\subsection{Kernel Regularizer}
+	\label{subsec:KernelRegularizer}
+	%This is the real shit yo!
+	The problem with outlying values is that they have an unproportional high impact on the CNN as a whole when compared to more standard values. In \autoref{subsec:BatchNormalization} we have already talked about dampening the effect of variables to get normalized values. Adding to that Kernel Regularization is used to dampen the effect of specific values, more specifically outlying values. In principal this is the same process as dampening the values in a linear regression model with the $\lambda$ value. We used the built-in Kernel Regularizer from Keras to modify our code and added it to each layer of the CNN. By trial and error we chose a value of $1e-4$. We computed 100 epochs of our CNN with BN, SGD and the just added Kernel Regularizer and achieved astounding results. The average validation accuracy went up from $\approx78\%$ to $\approx86\%$, which is a $+8\%$ difference. 
+	
+	%astounding results, incredible results. 
+	
+	% The good thing about Kernel Regularization is that 
+	
+	% Consider a small example: Suppose you have bla bla
+	\subsection{Activation Function}
+	Finally we got rid of the \textbf{Rectifid Linear Unit (ReLU)} activation function and replaced it with a modified version, \textbf{Leaky ReLU}. When training the CNN it can happen that a neuron happen to die (become inactive) and from that point onwards the output of said neuron gets ignored and is therefore useless. Normally when using ReLUs the value of inactive nodes is 0, but Leaky ReLUs allows neurons to have small positive value when they are inactive. This prevents neurons from completely dying so that they have still an impact and can also possibly recover and become more active again. In practice, we saw that Leaky ReLU already started to converge better after 10 epochs which was enough to convince us to keep Leaky ReLU as our preferred activation function. 
+	
+	% don't allow neurons to have non-zero values when they are inactive 
+	% Normally ReLUs don't allow neurons to have a positive value when they are inactive. 
+	
+	%Finally we got rid of the \textbf{Rectifid Linear Unit (ReLU)} activation function and replaced it with a modified version, \textbf{Leaky ReLU}. Normally ReLUs don't allow nodes to have a positive gradient when they are inactive. In contrast Leaky ReLU assigns a small real positive gradient when nodes are inactive. In practice, we saw that Leaky ReLU already started to converge better after 10 epochs which was enough to convince us to keep Leaky ReLU as our preferred activation function. 
+	
+	%However we didn't notice any major changes with regards to the accuracy when comparing ReLU to LeakyReLU. \\
+	%\\
+	PReLU. 
+
+	
+	\section{Discussion}
+	\label{sec:Discussion}
+	During the course of this assignment we tried out many different modifications to the given code. \autoref{fig:validationAccuracy} shows the plot with the most important changes that we made. Solid curves represent the validation accuracy (test accuracy) while the dashed and less opaque curves represent accuracy (training accuracy). Both curves are always given in pairs with the same color and correspond to one group of major changes. For example the black curves represent the original example without any modifications. Batch Normalization and Stochastic Gradient Descent are visible in the red curves. As we can see results improved slightly. Even more so curve for the validation accuracy doesn't jiggle as much anymore which is convenient. Finally by also adding Kernel Regularization we could improve the average validation accuracy from $\approx76\%$ to $\approx86\%$, i.e. $+10\%$ which corresponds to a percentual gain of $13.15\%$. These values are represented by the black- and green curves respectively. \\
+	\\
+	What's interesting to note is that for the original example and also the modification with Batch Normalization and SGD the validation accuracy is higher than the accuracy. This is unusual, but we are unsure why this is the case. After adding the Kernel Regularization the curves swap position and the validation accuracy is lower than the accuracy as it was expected by us. \\
+	\\
+	There are many more things that we could test and improve, such as testing more activation functions and different permutations of possible improvements, i.e. testing every activation function with and without Batch Normalization, with and without Stochastic Gradient Descent and so on. We also tried to remove the last Dropout ($0.5$) but that proofed to decrease the training and test error and we therefore put it in again. 
+
+	
+	%By adding Batch Normalization, Stochastic Gradient Descent and Kernel Regularization we could improve the average validation accuracy from $\approx76\%$ to $\approx86\%$, i.e. $+10\%$ which corresponds to a percentual gain of $13.15\%$. There are many more things that we could test and improve, such as testing more activation functions and different permutations of possible improvements, i.e. testing every activation function with and without Batch Normalization, with and without Stochastic Gradient Descent and so on. We also tried to remove the last Dropout ($0.5$) but that proofed to decrease the training and test error and we therefore put it in again. 
+	
+	% General: https://www.latex-tutorial.com/tutorials/pgfplots/
+	% Colors:  https://tex.stackexchange.com/questions/188131/how-to-change-color-at-line-chart
+	% Legend:  https://tex.stackexchange.com/questions/68299/adding-a-legend-entry-to-a-plot
+	% Dashe:   https://tex.stackexchange.com/questions/45275/tikz-get-values-for-predefined-dash-patterns
+	% Opacity: https://tex.stackexchange.com/questions/39037/tikz-use-opacity-for-fill-yet-leave-draw-lines-untouched
+	\begin{figure}
+		\caption{Comparison of validation accuracies for different implementations}
+		\label{fig:validationAccuracy}
+		
+		\begin{tikzpicture}% coordinates
+			\begin{axis} [
+				width = \linewidth,
+				grid=major,
+				xlabel = Epoch,
+				ylabel = Validation Accuracy,
+				legend pos = south east
+			]
+			
+			% Original Example validation accuracy
+			\addplot[black, line width = 0.5mm] table [
+				x = Epoch, 
+				y = Validation Accuracy, 
+				col sep=comma,
+			] {./plots/OriginalExampleValidationAccuracy.csv};
+			
+			% Original Example accuracy
+			\addplot[black, dashed, opacity=0.3, line width = 0.5mm] table [
+			x = Epoch, 
+			y = Accuracy, 
+			col sep=comma,
+			] {./plots/OriginalExampleAccuracy.csv};
+			
+			% SGD validation accuracy
+			\addplot[red, line width = 0.5mm] table [
+				x = Epoch, 
+				y = Validation Accuracy, 
+				col sep=comma,
+			] {./plots/SGDValidationAccuracy.csv};
+			
+			% SGD accuracy
+			\addplot[red, dashed, opacity=0.3, line width = 0.5mm] table [
+				x = Epoch, 
+				y = Accuracy, 
+				col sep=comma,
+			] {./plots/SGDAccuracy.csv};
+			
+			% Kernel Regularizer
+			\addplot[cgreen, line width = 0.5mm] table [
+				x = Epoch, 
+				y = Validation Accuracy, 
+				col sep=comma,
+			] {./plots/KernelRegularizerValidationAccuracy.csv};
+			
+			% Kernel Regularizer accuracy
+			\addplot[cgreen, dashed, opacity=0.3, line width = 0.5mm] table [
+				x = Epoch, 
+				y = Accuracy, 
+				col sep=comma,
+			] {./plots/KernelRegularizerAccuracy.csv};
+			
+			\addlegendentry{Original Example Val. Acc.}
+			\addlegendentry{Original Example Acc.}
+			\addlegendentry{SGD Val. Acc.}
+			\addlegendentry{SGD Acc.}
+			\addlegendentry{Kernel Regularizer Val. Acc.}
+			\addlegendentry{Kernel Regularizer Acc.}
+						
+			\end{axis}
+		\end{tikzpicture}
+	\end{figure}
+
+
+	
+	
+	
+	\section{Meep}
+	%One important remark: 
+	%We didn't only optimize for a low test error, but also for a high convergence rate. 
+	%Additionally we tried to keep the wall time per epoch under 5 minutes on our old, horrible machine. (With GPU support, GeForce GTX 660 Ti)
+	%The code was intended to be still readable and short.\\
+	%\\	
+	%We employed the supreme strategy of "stealing from the internet". In turn, we constrained ourselfs by
+	%keeping the original architecture somewhat intact. (Number of Convolutions, Kernels, etc)
+	For two of our largest improvements we where in part inspired by (1). (SGD + Momentum + Nesterov and Batch Normalization)
+	%Blabla, adaptive methods like RMSprop and Adam achieve better training error, but SGD generalizes better. 
+	%(lower test error). \\
+	Regarding (3), we wanted to remove Dropout and replace every instance of Convolution + Activation Function
+	with Convolution + Activation Function + Batch Normalization. This was horribly expensive, therefore we only
+	replaced each instance of Dropout(0.2) with Batch Normalization and it worked very well. 
+	%We tried to remove the last Dropout(0.5) but that proofed to decrease the training and test error.
+	%Leaky ReLU instead of ReLU: 
+	%In theory this prevents Neurons from dying. (Not activating at all and staying that way)
+	%In practice, we saw that Leaky ReLU converged better after 10 epochs and that was enough to convince us. 
+	%Students are lazy.\\
+	%\\	
+	%Last bit:
+	%Kernel regularization in the Conv2D layer is AMAZING. Inspired by the "lambda thingy" for polynomial interpolation.
+	%(Punishes complexity).\\
+	%\\
+	%While there is still possible room for improvement, we are still lazy students and the results are decent enough
+	%for a good grade.
+	
+\end{document}
