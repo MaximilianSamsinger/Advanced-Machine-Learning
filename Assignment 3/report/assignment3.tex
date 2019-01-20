@@ -60,13 +60,13 @@
 \definecolor{Classname}{rgb}{0,0,0}
 \definecolor{FunctionName}{rgb}{0,0,0}
 \definecolor{Operators}{rgb}{0,0,0}
-\definecolor{Background}{rgb}{0.98,0.98,0.98}
+\definecolor{Background}{rgb}{0.92,0.92,0.92}
 
 \lstdefinelanguage{Python}{
 	numbers=left,
 	numberstyle=\footnotesize,
 	numbersep=1em,
-	xleftmargin=1em,
+	xleftmargin=2em,
 	framextopmargin=2em,
 	framexbottommargin=2em,
 	showspaces=false,
@@ -128,26 +128,65 @@
 	\noindent The difference in our contributions is because Bernd just only started working with Machine Learning, while Maximilian has already prior knowledge in the subject. Thus we worked together, but the main programming work for this assignment was done by Maximilian. \\
 	\\
 	%Apart from that due to the size of the code we will only list the most important parts and explain them in detail with the gathered results. 
-	In this month's assignment we had to program the Mountain Car task, as initially described by Moore's PhD thesis in 1990 \cite{Moore90efficientmemory-based}. Though as for the actual implementation we used the github project from Senadhi as a basis \cite{MountainCar-v02018}. In contrast to the other assignments we don't have much code for this one, so we will show more of our code snippets in this report. 
+	In this month's assignment we had to program the Mountain Car task, as initially described by Moore's PhD thesis in 1990 \cite{Moore90efficientmemory-based}. Though as for the actual implementation we used the github project from Senadhi as a basis \cite{MountainCar-v02018}. 
+	%In contrast to the other assignments we don't have much code for this one, so we will show more of our code snippets in this report. 
 	
 	
 	\section{Task i}
-	Ok now listen here dipshits, this is fucking shite. \\
+	\label{sec:Taski}
+	%In the first task we were asked to calculate the action-value function approximation by directly using the states and actions as inputs. For this we first transform the initial state and action into a vector, initialize the weight vector with all 0's and then multiply the two as seen as in (action\_value()). \\
+	%\\
+	Before the algorithm starts the policy approximation some values have to be initialized. Our initial state gets reset by calling $state = env.reset()$. Similar to that the first action gets set to $0$, which corresponds to going left. The features get calculated by calling convert\_to\_features(). Depending on the task the flag $polynomial$ gets so that the function behaves as following: \textbf{Task i}, $polynomial = false$) Simply append the initial state with the first action and return it. \textbf{Task ii}, $polynomial = true$) Converts the state to a polynomial of degree max\_degree. However, we cap the degree of action at 1, since we cannot expect higher powers of action to deliver meaningful extra features. Hereby the actions can be $0$, $1$ or $2$, corresponding to \textit{go left}, \textit{do nothing} and \textit{go right} respectively.\\
 	\\
-	In the first task we were asked to calculate the action-value function approximation by directly using the states and actions as inputs. For this we first transform the initial state and action into a vector, initialize the weight vector with all 0's and then multiply the two as seen as in (action\_value()). \\
-	\\
-	The main part of the code consists of 2 nested for-loops. The outer loop represents each episode of the algorithm while the inner loop represents the steps that are made in each generation. The outer loop chooses the action that will get used to start the episode. At the start this action is dependant on the initially set values like described in the previous paragraph. \\
-	\\
-	From the second episode onwards the action that gets used is chosen by the algorithm, depending on which action is most suitable (choose\_action). This is done creating a random number and comparing it to a threshold, epsilon, which we set to $0.02$. In other words this means that in $2\%$ of all cases the algorithm performs a random action. This is done to ensure that even when the algorithm is shifting towards a certain policy and is therefore almost fixed in its actions, there is still the possibility that it performs random actions which might lead to better results. The percentage is purposely low so that the actions still get mainly chosen by the best action calculated. The action gets chosen anew in each step of each episode. \\
-	\\
-	After an action has been chosen the algorithm performs a step. Hereby the actions can be $0$, $1$ or $2$, corresponding to \textit{go left}, \textit{do nothing} and \textit{go right} respectively. The step also calculates the new state and the respective reward of the previous state in combination with the action. \\
-	\\
+	The main part of the code consists of 3 nested for-loops as seen in \autoref{fig:loops}. The only thing the outermost loop does is to completely run the code n times. This was just done for convenience so that Task iii can be done without having to manually restart the program. The two inner loops are more interesting: The middle loop represents each episode of the algorithm while the innermost loop represents the steps that are made in each generation. 
+	
+	\begin{figure}
+		\caption{Main part of the program with 3 nested for loops}
+		\label{fig:loops}
+		\lstinputlisting[language=Python]{code/loops.py}
+	\end{figure}
+	
+	\FloatBarrier
+	
+	\noindent At the start of each episode the middle loop chooses the action that gets used, depending on which action is most suitable (see $choose\_action()$). From the second episode onwards the action that gets used is chosen by the algorithm, depending on which action is most suitable (choose\_action()). This is done creating a random number and comparing it to a threshold, epsilon, which we set to $0.02$. In other words this means that in $2\%$ of all cases the algorithm performs a random action. This is done to ensure that even when the algorithm is shifting towards a certain policy and is therefore almost fixed in its actions, there is still the possibility that it performs random actions which might lead to better results. The percentage is purposely low so that the actions still get mainly chosen by the best action calculated. The action also gets chosen anew in each step of each episode (innermost loop). 
+	
+	
+	
+	%At the start of each episode the middle loop decides with which values the weights should get initialized like described previously. 
+	
+	 %which can be seeen in a call to convert\_to\_features(). 
+	%Regarding task 1 this function simply appends the starting state
+	%randomly chooses the weights, ranging from 
+	
+	%The main part of the code consists of 2 nested for-loops. The outer loop represents each episode of the algorithm while the inner loop represents the steps that are made in each generation. The outer loop chooses the action that will get used to start the episode. At the start this action is dependant on the initially set values like described in the previous paragraph. \\
+	%\\
+	%From the second episode onwards the action that gets used is chosen by the algorithm, depending on which action is most suitable (choose\_action()). This is done creating a random number and comparing it to a threshold, epsilon, which we set to $0.02$. In other words this means that in $2\%$ of all cases the algorithm performs a random action. This is done to ensure that even when the algorithm is shifting towards a certain policy and is therefore almost fixed in its actions, there is still the possibility that it performs random actions which might lead to better results. The percentage is purposely low so that the actions still get mainly chosen by the best action calculated. The action gets chosen anew in each step of each episode. \\
+	%\\
+	
+	\begin{figure}
+		\caption{Choose an action with which the algorithm proceeds}
+		\label{fig:chooseAction}
+		\lstinputlisting[language=Python]{code/chooseAction.py}
+	\end{figure}
+	\newpage
+	
+	
+	\noindent After an action has been chosen the algorithm performs a step. 
+	%Hereby the actions can be $0$, $1$ or $2$, corresponding to \textit{go left}, \textit{do nothing} and \textit{go right} respectively. 
+	The step also calculates the new state and the respective reward of the previous state in combination with the action.
+	
+	
+	
+	
+	
 	% Return or reward? 
 	The reward gets calculated as follows: For each step that gets performed and after which the mountain car is not at the goal the reward is -1. On the contrary if after a step the goal got reached the reward is positive, though no exact numbers are given. \\
 	\\
 	The only thing left to do is to update the weights so that the policy gets approximated to the best possible values. As long as the goal hasn't been reached the weights get updated by taking into account the action\_value functions of the current- and previous states and also two not yet seen variables, learning\_rate and discount. The learning rate is used to decrease the amount of calculations that we have to make. Theoretically in order to get the best possible policy we would have to perform all combinations of sets and actions that exist. However this amount of complexity is not practical and cannot be achieved in a senseful manner. So instead of trying out all combinations of states and actions we choose one as described in choose\_action() and then dampen the value of the chosen action by multiplying the outcome with the learning\_rate. \\
 	\\
-	The other variable is the discount factor. The discount also acts as a kind of dampening factor, but it is more general than the learning\_rate. The exact formula how weight update gets calculated can be seen in X. 
+	The other variable is the discount factor. The discount also acts as a kind of dampening factor, but it is more general than the learning\_rate. The exact formula how weight update gets calculated can be seen in X. \\
+	\\
+	Unfortunately our code doesn't work as expected. Sometimes the mountain car gets to the goal, but more often that not it doesn't. We don't know exactly why this is the case and so far we haven't figured it out. Also even when it reaches the goal the algorithm seems to unlearn this solution and the following episodes appear to be random again, disregarding which actions got it to the goal in the former episode. 
 	
 	
 	%the algorithm chooses the action which it calculated to be the best to start 
@@ -157,13 +196,18 @@
 	
 	
 	\section{Task ii}
-	This task is quite similar to the first one. The difference is that 
+	\label{sec:Taskii}
+	This task is quite similar to the first one. The difference is that the weights get initialized differently. How this is done is already described in \autoref{sec:Taski}. Since we had some issues getting Task i to work we also had the same issues for Task ii. 
 	
 	
 	\section{Task iii}
-	Finally in this task we compare the results from Task i and Task ii. 
+	Finally in this task we compare the results from Task i and Task ii. Uhm I don't know what to write here since we don't really have results to compare :see\_no\_evil:.
 	
-	
+	\begin{figure}[h]
+		\caption{Average reward per step}
+		\label{fig:AverageReward}
+		\includegraphics[width=0.9\textwidth]{plots/averageReward.png}
+	\end{figure}
 	
 	
 	\section{Discussion}
@@ -172,7 +216,7 @@
 	\\
 	Another thing to mention is that our algorithm is unstable. Even after letting the algorithm run for 1000+ episodes the results from the episodes vary strongly as seen by the graph in X. Unfortunately we don't know why this is the case. \\
 	\\
-	The major problem in our code is that our algorithm is prone to unlearning previously learned solutions. It may happen that it discovers a good way to drive upon the mountain, but the solution gets overwritten by the next episodes and therefore unlearns what brought it to the goal. 
+	Finally the major problem in our code is that our algorithm is prone to unlearning previously learned solutions. It may happen that it discovers a good way to drive upon the mountain, but the solution gets overwritten by the next episodes and therefore unlearns what brought it to the goal. 
 	
 	
 	% Action 0² = 0, 1² = 1, 2² = 4 --> massive bias on moving right; encode in weight in action 
