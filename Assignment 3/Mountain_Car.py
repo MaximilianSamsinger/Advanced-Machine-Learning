@@ -2,16 +2,16 @@ import gym
 import numpy as np
 import matplotlib.pyplot as plt
 
-NUM_RUNS = 100
+NUM_RUNS = 50
 
 MAX_EPISODE_STEPS = 5000
-NUM_EPISODES = 50
+NUM_EPISODES = 100
 NUM_ACTIONS = 3
 
 env = gym.make('MountainCar-v0').env
 env._max_episode_steps = MAX_EPISODE_STEPS
 
-POLYNOMIAL_FEATURES = False
+POLYNOMIAL_FEATURES = True
 POLYNOMIAL_DEGREE = 2
 
 
@@ -108,7 +108,7 @@ for j in range(NUM_RUNS):
         action = choose_action(state, weights.copy())
         cumulative_reward = 0
         for step in range(MAX_EPISODE_STEPS):
-            env.render()
+            #env.render()
             previous_state = state
             state, reward, done, info = env.step(action)
             next_action = choose_action(state, weights.copy())
@@ -119,18 +119,18 @@ for j in range(NUM_RUNS):
             if done:
                 break
             action = next_action
-        average_reward = cumulative_reward / (step + 1)
+        average_reward = cumulative_reward
         average_rewards[j,k] = average_reward
 
-average_rewards_per_run = average_rewards.sum(axis=0)/NUM_RUNS
+average_rewards_per_run = average_rewards.sum(axis=0)/NUM_RUNS/MAX_EPISODE_STEPS
 
 plt.plot(average_rewards_per_run)
 plt.xlabel('Episode')
-plt.ylabel('Average reward per step and run')
+plt.ylabel('Average reward per episode and run')
 if POLYNOMIAL_FEATURES:
     title = 'Using polynomial features\n'
 else:
     title = 'Using states and actions directly as features\n'
-title += 'Runs: ' + str(NUM_RUNS) \
-    + '; Steps per episode: ' + str(MAX_EPISODE_STEPS)
+title += 'Average of ' + str(NUM_RUNS) + ' runs with ' \
+    + str(MAX_EPISODE_STEPS) + ' steps per episode'
 plt.title(title)
