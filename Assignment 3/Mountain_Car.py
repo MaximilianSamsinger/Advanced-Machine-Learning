@@ -2,10 +2,10 @@ import gym
 import numpy as np
 import matplotlib.pyplot as plt
 
-NUM_RUNS = 25
+NUM_RUNS = 100
 
-MAX_EPISODE_STEPS = 500
-NUM_EPISODES = 100
+MAX_EPISODE_STEPS = 5000
+NUM_EPISODES = 50
 NUM_ACTIONS = 3
 
 env = gym.make('MountainCar-v0').env
@@ -61,7 +61,7 @@ state = env.reset()
     
 NUM_FEATURES = len(convert_to_features(state, 0))
 
-learning_rate = 1e-2
+learning_rate = 1e-4
 discount = 0.9
 
 def action_value(state, action, weights):
@@ -69,7 +69,7 @@ def action_value(state, action, weights):
     features = convert_to_features(state, action)
     return features @ weights
 
-def choose_action(state, weights, epsilon = 0.02):
+def choose_action(state, weights, epsilon = 0.33):
     ''' A random action will be picked with probability epsilon '''
     if epsilon > np.random.uniform():
         action = np.random.randint(0, NUM_ACTIONS)
@@ -90,7 +90,7 @@ def update_weights(previous_state, state, action, next_action,
                         + discount * action_value(state, next_action, weights)
                         - action_value(previous_state, action, weights))
     update *= gradient
-    weights -= update
+    weights -= update # Gradient descent
     return weights
 
 ''' Calculate average reward per run and per episode '''
@@ -100,22 +100,20 @@ average_rewards = np.zeros((NUM_RUNS, NUM_EPISODES))
 for j in range(NUM_RUNS):
     ''' Start of another run '''
     print('Run:', j)
-    weights = np.random.randn(NUM_FEATURES)
+    weights = np.random.rand(NUM_FEATURES)
     
     for k in range(NUM_EPISODES):
         ''' Start of another episode '''
         state = env.reset()
-        action = choose_action(state, weights)
+        action = choose_action(state, weights.copy())
         cumulative_reward = 0
         for step in range(MAX_EPISODE_STEPS):
-            if k % 100 == 102:
-                env.render()
-            
+            env.render()
             previous_state = state
             state, reward, done, info = env.step(action)
-            next_action = choose_action(state, weights)
+            next_action = choose_action(state, weights.copy())
             weights = update_weights(previous_state, state, action, 
-                                       next_action, weights, reward, done)
+                                       next_action, weights.copy(), reward, done)
             
             cumulative_reward += reward
             if done:
