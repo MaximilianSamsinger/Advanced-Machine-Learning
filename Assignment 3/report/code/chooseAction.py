@@ -1,4 +1,4 @@
-def choose_action(state, weights, epsilon = 0.02):
+def choose_action(state, weights, epsilon = 0.33):
     ''' A random action will be picked with probability epsilon '''
     if epsilon > np.random.uniform():
         action = np.random.randint(0, NUM_ACTIONS)

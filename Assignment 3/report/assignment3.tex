@@ -143,12 +143,16 @@
 	\begin{figure}
 		\caption{Main part of the program with 3 nested for loops}
 		\label{code:loops}
-		\lstinputlisting[language=Python]{code/loops.py}
+		\lstinputlisting[language=Python]{code/loops2.py}
 	\end{figure}
 	
 	\FloatBarrier
 	
-	\noindent At the start of each episode the middle loop chooses the action that gets used, depending on which action is most suitable (see \autoref{code:chooseAction}). From the second episode onwards the action that gets used is chosen by the algorithm, depending on which action is most suitable (choose\_action()). This is done creating a random number and comparing it to a threshold, epsilon, which we set to $0.02$. In other words this means that in $2\%$ of all cases the algorithm performs a random action. This is done to ensure that even when the algorithm is shifting towards a certain policy and is therefore almost fixed in its actions, there is still the possibility that it performs random actions which might lead to better results. The percentage is purposely low so that the actions still get mainly chosen by the best action calculated. The action also gets chosen anew in each step of each episode (innermost loop). 
+	\noindent At the start of each episode the middle loop chooses the action that gets used, depending on which action is most suitable (see \autoref{code:chooseAction}). From the second episode onwards the action that gets used is chosen by the algorithm, depending on which action is most suitable (choose\_action()). This is done creating a random number and comparing it to a threshold, epsilon, which we set to $0.33$. In other words this means that in $33\%$ of all cases the algorithm performs a random action. This is done to ensure that even when the algorithm is shifting towards a certain policy and is therefore almost fixed in its actions, there is still the possibility that it performs random actions which might lead to better results. Note that the action also gets chosen anew in each step of each episode (innermost loop). \\
+	\\
+	Initially we set the percentage of random actions to just $2\%$ which we thought would be good, but somehow the results were abysmal and the mountain car almost never got to the top. Once we increased the amount random actions to be $33\%$ the mountain car got to the top a lot of times. 
+	
+%	The percentage is purposely low so that the actions still get mainly chosen by the best action calculated. The action also gets chosen anew in each step of each episode (innermost loop). 
 	
 	
 	
@@ -192,7 +196,36 @@
 		\lstinputlisting[language=Python]{code/updateWeights.py}
 	\end{figure}
 	
-	Unfortunately our code doesn't work as expected. Sometimes the mountain car gets to the goal, but more often that not it doesn't. We don't know exactly why this is the case and so far we haven't figured it out. Also even when it reaches the goal the algorithm seems to unlearn this solution and the following episodes appear to be random again, disregarding which actions got it to the goal in the former episode. 
+	\noindent The results from the firs Task are visualized in \autoref{plot:averageRewardTask1}. Unfortunately there isn't much to say about the graph as it is highly unstable. The rewards appear to be randomly distributed within a a range of $-0.82$ and $-0.68$. Strange enough the rewards don't seem to converge towards a higher number with each episode which was what we expected at first. We don't know why this isn't the case, but it could very well be that a bug slipped into our code that we haven't identified yet. 
+	
+	\begin{figure}[h]
+		\caption{The average reward per episode after 50 runs (Task1)}
+		\label{plot:averageRewardTask1}
+		
+		\begin{tikzpicture}% coordinates
+		\begin{axis} [
+			width = \linewidth,
+			height = 7cm,
+			grid=major,
+			xlabel = Episode,
+			ylabel = Average Reward per Episode,
+			legend pos = south east
+		]
+		
+		\addplot[blue, line width = 0.5mm] table [
+			x = Episode, 
+			y = Average Reward, 
+			col sep=comma,
+		] {./plots/averageRewardTask1.csv};
+		
+		%\addlegendentry{Kernel Regularizer Acc.}
+		
+		\end{axis}
+		\end{tikzpicture}
+	\end{figure}
+	
+	
+	%Unfortunately our code doesn't work as expected. Sometimes the mountain car gets to the goal, but more often that not it doesn't. We don't know exactly why this is the case and so far we haven't figured it out. Also even when it reaches the goal the algorithm seems to unlearn this solution and the following episodes appear to be random again, disregarding which actions got it to the goal in the former episode. 
 	
 	
 	%the algorithm chooses the action which it calculated to be the best to start 
@@ -201,28 +234,63 @@
 	%The main loop calls updates the weights in each generation. 
 	
 	
-	\section{Task ii}
+	\section{Task ii \& Task iii}
 	\label{sec:Taskii}
-	This task is quite similar to the first one. The difference is that the weights get initialized differently. How this is done is already described in \autoref{sec:Taski}. Since we had some issues getting Task i to work we also had the same issues for Task ii. 
+	This task is quite similar to the first one. The difference is that the weights get initialized differently. How this is done is already described in \autoref{sec:Taski}. Task ii also has a highly unstable average reward, but compared to Task i the rewards seem to jitter even more. 
 	
+	%Task ii have the same jiggly-like pattern as Task i does, but it seems 
 	
-	\section{Task iii}
-	Finally in this task we compare the results from Task i and Task ii. Uhm I don't know what to write here since we don't really have results to compare :see\_no\_evil:.
+	%The differences in the results between Task i and Task ii are 
+	
+	%Since we had some issues getting Task i to work we also had the same issues for Task ii. 
 	
 	\begin{figure}[h]
-		\caption{Average reward per step}
-		\label{fig:AverageReward}
-		\includegraphics[width=0.9\textwidth]{plots/averageReward.png}
+		\caption{The average reward per episode after 50 runs (Task2)}
+		\label{plot:averageRewardTask2}
+		
+		\begin{tikzpicture}% coordinates
+		\begin{axis} [
+			width = \linewidth,
+			height = 7cm,
+			grid=major,
+			xlabel = Episode,
+			ylabel = Average Reward per Episode,
+			legend pos = south east
+		]
+		
+		\addplot[blue, line width = 0.5mm] table [
+			x = Episode, 
+			y = Average Reward, 
+			col sep=comma,
+		] {./plots/averageRewardTask2.csv};
+		
+		%\addlegendentry{Kernel Regularizer Acc.}
+		
+		\end{axis}
+		\end{tikzpicture}
 	\end{figure}
 	
 	
+	%\section{Task iii}
+	%Finally in this task we compare the results from Task i and Task ii. Uhm I don't know what to write here since we don't really have results to compare :see\_no\_evil:.
+	
+	
+	
+	%\begin{figure}[h]
+	%	\caption{Average reward per step}
+	%	\label{fig:AverageRewardTask2}
+	%	\includegraphics[width=0.9\textwidth]{plots/averageRewardTask2.png}
+	%\end{figure}
+	
+	
 	\section{Discussion}
-	As we have seen we ran into some problems while working on this assignment. First of all using polynomials as the initial values to approximate the action-value function is not good because it is highly likely that these values differ vastly from the actual underlying function that we try to approximate. Of course this is partly inevitable because by definition we don't know the underlying function yet and therefore have to approximate it. But there are far better methods to start the approximation, for example by using a Neural Network at first and then transferring the output to the Reinforcement Algorithms as the input, which is also the process that was used to train AlphaGo. 
+	As we have seen we ran into some problems while working on this assignment. First of all using polynomials as the initial values to approximate the action-value function is not good because it is highly likely that these values differ vastly from the actual underlying function that we try to approximate. Of course this is partly inevitable because by definition we don't know the underlying function yet and therefore have to approximate it. But there are far better methods to start the approximation, for example by using a Neural Network at first and then transferring the output to the Reinforcement Algorithms as the input, which is also the process that was used to train AlphaGo. \\
+	\\
 	%Broadly spoken this is exactly what AlphaGo does. \\
+	%\\
+	Another thing to mention is that our algorithm is unstable. Even after letting the algorithm run for 1000+ episodes the results from the episodes vary strongly as seen by \autoref{plot:averageRewardTask1} and \autoref{plot:averageRewardTask2}. Unfortunately we don't know why this is the case, but we have spoke with multiple colleagues of us from the course and their programs have similar behaviour. \\
 	\\
-	Another thing to mention is that our algorithm is unstable. Even after letting the algorithm run for 1000+ episodes the results from the episodes vary strongly as seen by the graph in X. Unfortunately we don't know why this is the case. \\
-	\\
-	Finally the major problem in our code is that our algorithm is prone to unlearning previously learned solutions. It may happen that it discovers a good way to drive upon the mountain, but the solution gets overwritten by the next episodes and therefore unlearns what brought it to the goal. 
+	Finally the major problem in our code is that our algorithm is prone to unlearning previously learned solutions. It may happen that it discovers a good way to drive upon the mountain, but the solution gets overwritten by the next episodes and therefore unlearns what brought it to the goal, which might be the reason why the graphs are so jittery. 
 	
 	
 	% Action 0² = 0, 1² = 1, 2² = 4 --> massive bias on moving right; encode in weight in action 
