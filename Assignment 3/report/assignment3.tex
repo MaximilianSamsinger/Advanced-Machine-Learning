@@ -132,7 +132,7 @@
 	
 	\section{Task i}
 	\label{sec:Taski}
-	Before the algorithm starts the policy approximation some values have to be initialized. Our initial state gets reset by calling $state = env.reset()$. Similar to that the first action gets set to $0$, which corresponds to going left. The features get calculated by calling convert\_to\_features(). Depending on the task the flag polynomial changes the behaviour of the function: \textbf{Task i}, $polynomial = false$) Simply append the initial state with the first action and return it. \textbf{Task ii}, $polynomial = true$) Converts the state to a polynomial of degree max\_degree. However, we cap the degree of action at 1, since we cannot expect higher powers of action to deliver meaningful extra features. Hereby the actions can be $0$, $1$ or $2$, corresponding to \textit{go left}, \textit{do nothing} and \textit{go right} respectively.\\
+	Before the algorithm starts the policy approximation some values have to be initialized. Our initial state gets reset by calling $state = env.reset()$. Similar to that the first action gets set to $0$, which corresponds to going left. The features get calculated by calling convert\_to\_features(). Depending on the task the flag $polynomial$ changes the behaviour of the function: \textbf{Task i}, $polynomial = false$) Simply append the initial state with the first action and return it. \textbf{Task ii}, $polynomial = true$) Converts the state to a polynomial of degree max\_degree. However, we cap the degree of action at 1, since we cannot expect higher powers of action to deliver meaningful extra features. Hereby the actions can be $0$, $1$ or $2$, corresponding to \textit{go left}, \textit{do nothing} and \textit{go right} respectively.\\
 	\\
 	The main part of the code consists of 3 nested for-loops as seen in \autoref{code:loops}. The only thing the outermost loop does is to completely run the code n times. This was just done for convenience so that Task iii can be done without having to manually restart the program. The two inner loops are more interesting: The middle loop represents each episode of the algorithm while the innermost loop represents the steps that are made in each generation. 
 	
@@ -144,9 +144,9 @@
 	
 	\FloatBarrier
 	
-	\noindent At the start of each episode the middle loop chooses the action that gets used, depending on which action is most suitable (see \autoref{code:chooseAction}). From the second episode onwards the action that gets used is chosen by the algorithm, depending on which action is most suitable (choose\_action()). This is done creating a random number and comparing it to a threshold, epsilon, which we set to $0.33$. In other words this means that in $33\%$ of all cases the algorithm performs a random action. \\
+	\noindent At the start of each episode the middle loop chooses the action that gets used, depending on which action is most suitable (see \autoref{code:chooseAction}). From the second episode onwards the action that gets used is chosen by the algorithm, depending on which action is most suitable. This is done creating a random number and comparing it to a threshold, epsilon, which we set to $0.33$. In other words this means that in $33\%$ of all cases the algorithm performs a random action. \\
 	\\
-	Initially we set the percentage of random actions to just $2\%$ but we quickly realized, that the mountain car almost never reached the top. Even when it did, it quickly unlearned its behaviour independent of the learning rate.  Once we increased the amount of random actions to $33\%$, and therefore kept the exploration rate very high throughout the simulation, the mountain car got to the top a lot of times.
+	Initially we set the percentage of random actions to just $2\%$, but we quickly realized, that the mountain car almost never reached the top. Even when it did, it quickly unlearned its behaviour independent of the learning rate.  Once we increased the amount of random actions to $33\%$, and therefore kept the exploration rate very high throughout the simulation, the mountain car got to the top a lot of times.
 	
 	%This is done to ensure that even when the algorithm is shifting towards a certain policy and is therefore almost fixed in its actions, there is still the possibility that it performs random actions which might lead to better results. Note that the action also gets chosen anew in each step of each episode (innermost loop). \\
 	%\\
@@ -182,7 +182,7 @@
 	
 	%\noindent The results from the firs Task are visualized in \autoref{plot:averageRewardTask1}. Unfortunately there isn't much to say about the graph as it is highly unstable. The rewards appear to be randomly distributed within a a range of $-0.82$ and $-0.68$. Strange enough the rewards don't seem to converge towards a higher number with each episode which was what we expected at first. We don't know why this isn't the case, but it could very well be that a bug slipped into our code that we haven't identified yet. 
 	
-	\noindent The results from the first Task are visualized in \autoref{plot:averageRewardTask1}. As we can see, the average reward per episode is highly unstable. The rewards appear to be randomly distributed within a a range of $-0.82$ and $-0.68$. As we can see, the average rewards don't seem to converge over multiple episodes. We assume this happens because of the high exploration rate of our algorithm.
+	\noindent The results from the first Task are visualized in \autoref{plot:averageRewardTask1}. As we can see, the average reward per episode is highly unstable. The rewards appear to be randomly distributed within a a range of $-0.82$ and $-0.68$. Furthermore the average rewards don't seem to converge over multiple episodes. We assume this happens because of the high exploration rate of our algorithm.
 	
 	\begin{figure}[h]
 		\caption{The average reward per episode after 50 runs (Task1)}
@@ -213,7 +213,7 @@
 	
 	\section{Task ii \& Task iii}
 	\label{sec:Taskii}
-	This task is quite similar to the first one. The difference is that the $convert\_to\_features()$ function get initialized differently. How this is done is already described in \autoref{sec:Taski}. Task ii also has a highly unstable average reward, but compared to Task i the rewards seem to jitter even more. 
+	Task ii is quite similar to the first one. The difference is that the $convert\_to\_features()$ function get initialized differently. How this is done is already described in \autoref{sec:Taski}. Task ii also has a highly unstable average reward, but compared to Task i the rewards seem to jitter even more. 
 
 	\begin{figure}[h]
 		\caption{The average reward per episode after 50 runs (Task2)}
@@ -242,12 +242,13 @@
 	\end{figure}
 	
 	
+	\vspace{-1cm}
 	\section{Discussion}
 	%As we have seen we ran into some problems while working on this assignment. First of all using polynomials as the initial values to approximate the action-value function is not good because it is highly likely that these values differ vastly from the actual underlying function that we try to approximate. Of course this is partly inevitable because by definition we don't know the underlying function yet and therefore have to approximate it. But there are far better methods to start the approximation, for example by using a Neural Network at first and then transferring the output to the Reinforcement Algorithms as the input, which is also the process that was used to train AlphaGo. \\
 	%\\
 	We ran into some problems while working on this assignment. First of all polynomials seem to be insufficient to approximate the action-value function. If we had to redo the exercise and could freely choose the features, we would try out coarse coding or we would approximate the action-value function with a neural network. \\
 	\\
-	Another thing to mention is that our algorithm is unstable. Even after letting the algorithm run for 1000+ episodes the results from the episodes vary strongly as seen by \autoref{plot:averageRewardTask1} and \autoref{plot:averageRewardTask2}. Unfortunately we don't know why this is the case, but we have spoke with multiple colleagues of us from the course and their programs have similar behaviour. \\
+	Another thing to mention is that our algorithm is unstable. Even after letting the algorithm run for $1000+$ episodes the results from the episodes vary strongly as seen by \autoref{plot:averageRewardTask1} and \autoref{plot:averageRewardTask2}. Unfortunately we don't know why this is the case, but we have spoke with multiple colleagues of us from the course and their programs have similar behaviour. \\
 	\\
 	Finally the major problem in our code is that our algorithm is prone to unlearning previously learned solutions. It may happen that it discovers a good way to drive upon the mountain, but the solution gets overwritten by the next episodes and therefore unlearns what brought it to the goal, which might be the reason why the graphs are so jittery. 
 	
