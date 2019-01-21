@@ -22,3 +22,5 @@ for j in range(NUM_RUNS):
             action = next_action
         average_reward = cumulative_reward
         average_rewards[j,k] = average_reward
+        
+average_rewards_per_run = average_rewards.sum(axis=0)/NUM_RUNS/MAX_EPISODE_STEPS
